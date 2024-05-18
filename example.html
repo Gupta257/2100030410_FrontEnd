@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form Builder</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .field-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .field-container input[type="text"],
+        .field-container select,
+        .field-container button {
+            margin-right: 10px;
+        }
+        .field-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            color: #495057;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .field-container button {
+            background-color: #007bff;
+            border: 1px solid #ced4da;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        .field-container button:hover {
+            background-color: #0056b3;
+        }
+        .add-field {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .add-field select {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            color: #495057;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .add-field button {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-field button:hover {
+            background-color: #218838;
+        }
+        .options-container {
+            flex: 1 1 100%;
+            margin-top: 10px;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .option-item input[type="text"] {
+            flex: 1;
+            padding: 5px;
+            margin-right: 5px;
+        }
+        .option-item button {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option-item button:hover {
+            background-color: #c82333;
+        }
+        .final-form {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        .final-form h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .final-form button {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            transition: background-color 0.3s;
+        }
+        .final-form button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Dynamic Form Builder</h1>
+<div class="form-container" id="formContainer">
+    <!-- Dynamic fields will be added here -->
+</div>
+<div class="add-field">
+    <select id="fieldType">
+        <option value="text">Text Input</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="radio">Radio Button</option>
+        <option value="dropdown">Dropdown</option>
+    </select>
+    <button onclick="addField()">Add Field</button>
+</div>
+<div class="final-form" id="finalForm">
+    <h2>Final Form</h2>
+    <button onclick="confirmForm()">Confirm</button>
+</div>
+
+<script>
+    let fieldCount = 0;
+
+    function addField() {
+        const formContainer = document.getElementById('formContainer');
+        const fieldType = document.getElementById('fieldType').value;
+        fieldCount++;
+
+        const fieldContainer = document.createElement('div');
+        fieldContainer.className = 'field-container';
+        fieldContainer.id = `field-${fieldCount}`;
+
+        let fieldElement;
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = 'Name';
+
+        fieldContainer.appendChild(nameInput);
+
+        if (fieldType === 'text') {
+            fieldElement = document.createElement('input');
+            fieldElement.type = 'text';
+            fieldElement.placeholder = 'Enter text...';
+        } else if (fieldType === 'dropdown') {
+            fieldElement = document.createElement('div');
+            fieldElement.className = 'options-container';
+            
+            const addOptionButton = document.createElement('button');
+            addOptionButton.innerHTML = 'Add Option';
+            addOptionButton.onclick = () => addDropdownOption(fieldElement);
+
+            fieldContainer.appendChild(addOptionButton);
+        } else {
+            fieldElement = document.createElement('div');
+            fieldElement.className = 'options-container';
+            
+            const addOptionButton = document.createElement('button');
+            addOptionButton.innerHTML = 'Add Option';
+            addOptionButton.onclick = () => addOption(fieldElement, fieldType, nameInput.value);
+
+            fieldContainer.appendChild(addOptionButton);
+        }
+
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = 'Delete';
+        deleteButton.onclick = () => removeField(fieldContainer.id);
+        fieldContainer.appendChild(deleteButton);
+
+        fieldContainer.appendChild(fieldElement);
+        formContainer.appendChild(fieldContainer);
+    }
+
+    function addOption(container, type, name) {
+        const optionContainer = document.createElement('div');
+        optionContainer.className = 'option-item';
+
+        const optionLabel = document.createElement('input');
+        optionLabel.type = 'text';
+        optionLabel.placeholder = 'Option';
+
+        const optionInput = document.createElement('input');
+        optionInput.type = type;
+        if (type === 'radio') {
+            optionInput.name = name;
+        }
+
+        const deleteOptionButton = document.createElement('button');
+        deleteOptionButton.innerHTML = 'Delete';
+        deleteOptionButton.onclick = () => removeOption(optionContainer);
+
+        optionContainer.appendChild(optionLabel);
+        optionContainer.appendChild(optionInput);
+        optionContainer.appendChild(deleteOptionButton);
+        container.appendChild(optionContainer);
+    }
+
+    function addDropdownOption(container) {
+        const optionContainer = document.createElement('div');
+        optionContainer.className = 'option-item';
+
+        const optionLabel = document.createElement('input');
+        optionLabel.type = 'text';
+        optionLabel.placeholder = 'Option';
+
+        const deleteOptionButton = document.createElement('button');
+        deleteOptionButton.innerHTML = 'Delete';
+        deleteOptionButton.onclick = () => removeOption(optionContainer);
+
+        optionContainer.appendChild(optionLabel);
+        optionContainer.appendChild(deleteOptionButton);
+        container.appendChild(optionContainer);
+    }
+
+    function removeField(id) {
+        const field = document.getElementById(id);
+        field.remove();
+    }
+
+    function removeOption(container) {
+        container.remove();
+    }
+
+    function confirmForm() {
+        const formContainer = document.getElementById('formContainer');
+        const finalForm = document.getElementById('finalForm');
+        finalForm.innerHTML = '<h2>Final Form</h2>';
+
+        const fields = formContainer.children;
+        for (const field of fields) {
+            const name = field.querySelector('input[type="text"]').value;
+            const optionsContainer = field.querySelector('.options-container');
+
+            if (optionsContainer) {
+                if (field.querySelector('input[type="text"]:nth-child(2)').placeholder === 'Option') {
+                    const options = optionsContainer.querySelectorAll('.option-item');
+                    const select = document.createElement('select');
+                    select.name = name;
+                    for (const option of options) {
+                        const optionLabel = option.querySelector('input[type="text"]').value;
+                        const optionElement = document.createElement('option');
+                        optionElement.value = optionLabel;
+                        optionElement.textContent = optionLabel;
+                        select.appendChild(optionElement);
+                    }
+                    finalForm.innerHTML += `
+                        <div>
+                            <label for="${name}">${name}</label>
+                            ${select.outerHTML}
+                        </div>`;
+                } else {
+                    const options = optionsContainer.querySelectorAll('.option-item');
+                    for (const option of options) {
+                        const optionLabel = option.querySelector('input[type="text"]').value;
+                        const optionInput = option.querySelector('input[type="checkbox"], input[type="radio"]');
+                        if (optionInput.type === 'radio') {
+                            finalForm.innerHTML += `
+                                <div>
+                                    <input type="radio" name="${optionInput.name}" id="${optionLabel}">
+                                    <label for="${optionLabel}">${optionLabel}</label>
+                                </div>`;
+                        } else if (optionInput.type === 'checkbox') {
+                            finalForm.innerHTML += `
+                                <div>
+                                    <input type="checkbox" id="${optionLabel}">
+                                    <label for="${optionLabel}">${optionLabel}</label>
+                                </div>`;
+                        }
+                    }
+                }
+            } else {
+                const inputField = field.querySelector('input[type="text"]:nth-child(2)');
+                finalForm.innerHTML += `
+                    <div>
+                        <label for="${name}">${name}</label>
+                        <input type="text" id="${name}" placeholder="${inputField.placeholder}">
+                    </div>`;
+            }
+        }
+        
+        finalForm.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
